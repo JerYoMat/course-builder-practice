@@ -1,6 +1,7 @@
-export const createCourse = name => {
+export const createCourse = (name, price) => {
   return postData('/courses', {
-    name
+    name,
+    price: parseFloat(price)
   });
 };
 

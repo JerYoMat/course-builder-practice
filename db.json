@@ -1,18 +1,9 @@
 {
   "courses": [
     {
+      "name": "first course",
+      "price": 100,
       "id": 1
-    },
-    {
-      "id": 2
-    },
-    {
-      "name": "atest",
-      "id": 3
-    },
-    {
-      "name": "taetasets",
-      "id": 4
     }
   ]
 }
