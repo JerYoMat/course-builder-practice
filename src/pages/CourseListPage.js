@@ -4,15 +4,26 @@ import { addCourse } from '../actions';
 import './CourseListPage.css';
 
 //needs to receive the courses as a prop 
-const CourseListPage = ({ courses, dispatch }) => {
+const CourseListPage = ({ 
+  courses, 
+  saveInProgress,
+  saveError,
+  coursesLoading,
+  coursesError,
+  dispatch }) => {
   const [courseName, setCourseName] = useState('');
   
   const handleSubmit = e => {
     e.preventDefault();
     dispatch(addCourse(courseName))
+  };
+  if (coursesLoading) {
+    return <div />
   }
-  //create new course if empty 
-  //otherwise show list of courses
+  if (coursesError) {
+    return <div>{coursesError.message}</div>
+  }
+
   return (
     courses.length === 0 ? (
       <div className='CreateCourse'>
@@ -21,11 +32,17 @@ const CourseListPage = ({ courses, dispatch }) => {
           <label>
             Enter a name:
             <input 
+            disabled={saveInProgress}
             value={courseName}
             onChange={e => setCourseName(e.target.value)}
           />
-          <button type='submit'>Create Course</button>
+          {saveError && (
+            <div className="saveError-message">
+              Error: {saveError.message}
+            </div>
+          )}
           </label>
+          <button type='submit' disabled={saveInProgress}>Create Course</button>
         </form>
       </div>
     ) : (
@@ -41,7 +58,11 @@ const CourseListPage = ({ courses, dispatch }) => {
 }
 
 const mapState = (state) => ({
-  courses: state.courses
-})
+  courses: state.courses,
+  saveInProgress: state.saveInProgress,
+  saveError: state.saveError,
+  coursesLoading: state.coursesLoading,
+  coursesError: state.coursesError
+});
 
 export default connect(mapState)(CourseListPage);
