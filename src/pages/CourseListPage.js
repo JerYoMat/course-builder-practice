@@ -1,82 +1,73 @@
-import React,{ useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { addCourse } from '../actions';
+import {
+  openNewCourseModal,
+  closeNewCourseModal
+} from '../actions';
+import Modal from 'react-modal';
+import NewCourse from '../components/NewCourse';
 import './CourseListPage.css';
 
-//needs to receive the courses as a prop 
-const CourseListPage = ({ 
-  courses, 
-  saveInProgress,
-  saveError,
+const CourseListPage = ({
+  courses,
   coursesLoading,
   coursesError,
-  dispatch }) => {
-  const [courseName, setCourseName] = useState('');
-  const [price, setPrice] = useState(null);
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    dispatch(addCourse(courseName, price))
-  };
+  isModalOpen,
+  openNewCourseModal,
+  closeNewCourseModal
+}) => {
   if (coursesLoading) {
-    return <div />
+    return <div />;
   }
+
   if (coursesError) {
-    return <div>{coursesError.message}</div>
+    return <div>{coursesError.message}</div>;
   }
 
-  return (
-    courses.length === 0 ? (
-      <div className='CreateCourse'>
-        <h1>Create your First Course</h1>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Enter a name:
-            <input 
-            disabled={saveInProgress}
-            value={courseName}
-            onChange={e => setCourseName(e.target.value)}
-          />
-          </label>
-          <label>
-            Enter Price:
-            <input 
-            disabled={saveInProgress}
-            value={price}
-            onChange={e => setPrice(e.target.value)}
-          />
-          {saveError && (
-            <div className="saveError-message">
-              Error: {saveError.message}
-            </div>
-          )}
-          </label>
-
-          <button type='submit' disabled={saveInProgress}>Create Course</button>
-        </form>
-      </div>
-    ) : (
-      <div className='CourseList'>
+  return courses.length === 0 ? (
+    <div className="CreateCourse">
+      <NewCourse />
+    </div>
+  ) : (
+    <div className="CourseList">
       <h1>Your Courses</h1>
+      <button
+        className="new-course-btn"
+        onClick={openNewCourseModal}
+      >
+        New Course
+      </button>
       <ul>
         {courses.map(course => (
           <li key={course.id}>
-            <div className='title'>{course.name}</div>
-            <div className='price'>{course.price.toFixed(2)}</div>
+            <div className="title">{course.name}</div>
+            <div className="price">
+              ${course.price.toFixed(2)}
+            </div>
           </li>
         ))}
       </ul>
-      </div>
-    )
-  )
-}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeNewCourseModal}
+      >
+        <NewCourse />
+      </Modal>
+    </div>
+  );
+};
 
-const mapState = (state) => ({
+const mapState = state => ({
   courses: state.courses,
-  saveInProgress: state.saveInProgress,
-  saveError: state.saveError,
   coursesLoading: state.coursesLoading,
-  coursesError: state.coursesError
+  coursesError: state.coursesError,
+  isModalOpen: state.newCourseModalOpen
 });
-
-export default connect(mapState)(CourseListPage);
+const mapDispatch = {
+  openNewCourseModal,
+  closeNewCourseModal
+};
+export default connect(
+  mapState,
+  mapDispatch
+)(CourseListPage);
